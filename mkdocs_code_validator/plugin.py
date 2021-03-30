@@ -22,6 +22,7 @@ log.addFilter(mkdocs.utils.warning_filter)
 
 @dataclasses.dataclass
 class IdentifierConfig:
+    language: str
     validators: List[str]
 
 
@@ -39,12 +40,17 @@ class _IdentifierConfigs(config_options.OptionallyRequired):
                     f"Expected a dict as the value for {ident!r}, got {type(conf)}"
                 )
 
+            config.setdefault("language", ident)
             config.setdefault("validators", [])
             try:
                 value[ident] = config = IdentifierConfig(**config)
             except TypeError as e:
                 raise ValidationError(str(e))
 
+            if not isinstance(config.language, (str, type(None))):
+                raise ValidationError(
+                    f"Expected 'language' to be a string, got {type(config.language)}"
+                )
             if not isinstance(config.validators, list):
                 raise ValidationError(
                     f"Expected 'validators' to be a list of strings, got {type(config.validators)}"
@@ -116,7 +122,7 @@ class CodeValidatorPlugin(BasePlugin):
         kwargs.setdefault("classes", []).append(language)
         return md.preprocessors["fenced_code_block"].extension.superfences[0]["formatter"](
             src=src,
-            language=language,
+            language=config.language,
             class_name=class_name,
             options=options,
             md=md,
