@@ -1,6 +1,7 @@
 import collections
 import concurrent.futures
 import dataclasses
+import distutils.util
 import functools
 import logging
 import os
@@ -65,9 +66,18 @@ class _IdentifierConfigs(config_options.OptionallyRequired):
 
 
 class CodeValidatorPlugin(BasePlugin):
-    config_scheme = (("identifiers", _IdentifierConfigs()),)
+    config_scheme = (
+        ("enabled", config_options.Type(bool, default=True)),
+        ("enable_on_env", config_options.Type(str, default=None)),
+        ("identifiers", _IdentifierConfigs()),
+    )
 
     def on_config(self, config: Config, **kwargs) -> Config:
+        enable_on_env = self.config["enable_on_env"]
+        self.enabled = self.config["enabled"] or (
+            enable_on_env and distutils.util.strtobool(os.getenv(enable_on_env, "0"))
+        )
+
         a = config.setdefault("mdx_configs", {})
         b = a.setdefault("pymdownx.superfences", {})
         c = b.setdefault("custom_fences", [])
@@ -82,7 +92,7 @@ class CodeValidatorPlugin(BasePlugin):
         return config
 
     def on_pre_build(self, **kwargs):
-        self._pool = concurrent.futures.ThreadPoolExecutor(5)
+        self._pool = concurrent.futures.ThreadPoolExecutor(5, thread_name_prefix=__name__)
         self._results = collections.deque()
 
     def on_page_markdown(self, markdown: str, page: Page, **kwargs) -> str:
@@ -114,10 +124,11 @@ class CodeValidatorPlugin(BasePlugin):
         md: Markdown,
         **kwargs,
     ):
-        for validator_cmd in config.validators:
-            assert isinstance(validator_cmd, str)
-            future = self._pool.submit(_validate, src, validator_cmd)
-            self._results.append((self.current_file, src, validator_cmd, future))
+        if self.enabled:
+            for validator_cmd in config.validators:
+                assert isinstance(validator_cmd, str)
+                future = self._pool.submit(_validate, src, validator_cmd)
+                self._results.append((self.current_file, src, validator_cmd, future))
 
         kwargs.setdefault("classes", []).append(language)
 
