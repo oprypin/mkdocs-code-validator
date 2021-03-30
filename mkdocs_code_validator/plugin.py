@@ -37,7 +37,7 @@ class _IdentifierConfigs(config_options.OptionallyRequired):
         for ident, config in value.items():
             if not isinstance(config, dict) or not config:
                 raise ValidationError(
-                    f"Expected a dict as the value for {ident!r}, got {type(conf)}"
+                    f"Expected a dict as the value for {ident!r}, got {type(config)}"
                 )
 
             config.setdefault("language", ident)
@@ -120,7 +120,9 @@ class CodeValidatorPlugin(BasePlugin):
             self._results.append((self.current_file, src, validator_cmd, future))
 
         kwargs.setdefault("classes", []).append(language)
-        return md.preprocessors["fenced_code_block"].extension.superfences[0]["formatter"](
+
+        fences_preprocessor = md.preprocessors["fenced_code_block"].extension.superfences  # type: ignore
+        return fences_preprocessor[0]["formatter"](
             src=src,
             language=config.language,
             class_name=class_name,
