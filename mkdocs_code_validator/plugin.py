@@ -13,7 +13,7 @@ from typing import Any, List, Mapping, MutableMapping, Optional
 import mkdocs.utils
 from markdown import Markdown
 from mkdocs.config import Config, config_options
-from mkdocs.config.base import ValidationError
+from mkdocs.config.base import ValidationError  # pytype: disable=import-error
 from mkdocs.plugins import BasePlugin
 from mkdocs.structure.pages import Page
 
