@@ -19,6 +19,8 @@ from mkdocs.structure.pages import Page
 
 log = logging.getLogger(f"mkdocs.plugins.{__name__}")
 log.addFilter(mkdocs.utils.warning_filter)
+basic_log = logging.getLogger(__name__)
+basic_log.propagate = False
 
 
 @dataclasses.dataclass
@@ -156,7 +158,8 @@ class CodeValidatorPlugin(BasePlugin):
                     "-------- Output --------",
                     e.stdout.decode(errors="replace").rstrip(),
                 )
-                log.warning("\n".join(msg))
+                log.warning(msg[0])
+                basic_log.warning("\n".join(msg[1:]))
 
 
 @functools.lru_cache(maxsize=None)
