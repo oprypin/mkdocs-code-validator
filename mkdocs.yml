@@ -1,0 +1,26 @@
+site_name: "mkdocs-code-validator"
+site_description: "Checks Markdown code blocks in a MkDocs site against user-defined actions"
+site_url: "https://oprypin.github.io/mkdocs-code-validator"
+repo_url: "https://github.com/oprypin/mkdocs-code-validator"
+edit_uri: blob/master/docs/
+use_directory_urls: false
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    primary: teal
+    accent: purple
+
+markdown_extensions:
+- pymdownx.details
+- pymdownx.highlight
+- pymdownx.magiclink
+- pymdownx.saneheaders
+- pymdownx.superfences
+- pymdownx.snippets:
+    check_paths: true
+- admonition
+- toc:
+    permalink: "#"
