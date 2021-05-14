@@ -6,6 +6,7 @@ authors = ["Oleh Prypin <oleh@pryp.in>"]
 license = "MIT"
 repository = "https://github.com/oprypin/mkdocs-code-validator"
 keywords = ["mkdocs", "mkdocs-plugin"]
+readme = "README.md"
 
 [tool.poetry.plugins."mkdocs.plugins"]
 code-validator = "mkdocs_code_validator.plugin:CodeValidatorPlugin"

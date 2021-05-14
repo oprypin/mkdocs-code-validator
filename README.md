@@ -3,7 +3,7 @@
 **Checks Markdown code blocks in a [MkDocs][] site against user-defined actions**
 
 [![PyPI](https://img.shields.io/pypi/v/mkdocs-code-validator)](https://pypi.org/project/mkdocs-code-validator/)
-[![License](https://img.shields.io/github/license/oprypin/mkdocs-code-validator)](LICENSE.md)
+[![License](https://img.shields.io/github/license/oprypin/mkdocs-code-validator)](https://github.com/oprypin/mkdocs-code-validator/blob/master/LICENSE.md)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/oprypin/mkdocs-code-validator/CI)](https://github.com/oprypin/mkdocs-code-validator/actions?query=event%3Apush+branch%3Amaster)
 
 ```shell
