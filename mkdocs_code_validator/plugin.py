@@ -67,6 +67,9 @@ class _IdentifierConfigs(config_options.OptionallyRequired):
         return value
 
 
+_Result = collections.namedtuple("_Result", "file src command future")
+
+
 class CodeValidatorPlugin(BasePlugin):
     config_scheme = (
         ("enabled", config_options.Type(bool, default=True)),
@@ -93,7 +96,7 @@ class CodeValidatorPlugin(BasePlugin):
             c.append(fence)
         return config
 
-    def on_pre_build(self, **kwargs):
+    def on_pre_build(self, config: Config, **kwargs):
         self._pool = concurrent.futures.ThreadPoolExecutor(5, thread_name_prefix=__name__)
         self._results = collections.deque()
 
@@ -102,9 +105,11 @@ class CodeValidatorPlugin(BasePlugin):
         self._check_errors(False)
         return markdown
 
-    def on_post_build(self, **kwargs):
+    def on_post_build(self, config: Config, **kwargs):
         self._check_errors(True)
-        self._pool.shutdown(cancel_futures=True)
+        for r in self._results:
+            r.future.cancel()
+        self._pool.shutdown()
 
     def validator(
         self,
@@ -130,7 +135,7 @@ class CodeValidatorPlugin(BasePlugin):
             for validator_cmd in config.validators:
                 assert isinstance(validator_cmd, str)
                 future = self._pool.submit(_validate, src, validator_cmd)
-                self._results.append((self.current_file, src, validator_cmd, future))
+                self._results.append(_Result(self.current_file, src, validator_cmd, future))
 
         kwargs.setdefault("classes", []).append(language)
 
@@ -145,7 +150,7 @@ class CodeValidatorPlugin(BasePlugin):
         )
 
     def _check_errors(self, all_errors):
-        while self._results and (all_errors or self._results[0][-1].done()):
+        while self._results and (all_errors or self._results[0].future.done()):
             file, src, command, future = self._results.popleft()
             try:
                 future.result(timeout=300)
