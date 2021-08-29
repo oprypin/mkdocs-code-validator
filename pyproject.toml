@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mkdocs-code-validator"
-version = "0.1.0"
+version = "0.1.1"
 description = "Checks Markdown code blocks in a MkDocs site against user-defined actions"
 authors = ["Oleh Prypin <oleh@pryp.in>"]
 license = "MIT"
