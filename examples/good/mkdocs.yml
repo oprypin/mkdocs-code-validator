@@ -1,0 +1,18 @@
+site_name: foo
+site_url: http://example.org/
+
+plugins:
+  - search
+  - code-validator:
+      identifiers:
+        bash:
+          validators:
+            - grep a
+        special:
+          language: bash
+          validators:
+            - grep b
+            - grep c
+
+markdown_extensions:
+  - pymdownx.superfences

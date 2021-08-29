@@ -23,4 +23,3 @@ jobs:
         with:
           publish_dir: site
           commit_message: 'Generate docs: '
-
