@@ -1,7 +1,6 @@
 import collections
 import concurrent.futures
 import dataclasses
-import distutils.util
 import functools
 import logging
 import os
@@ -80,7 +79,7 @@ class CodeValidatorPlugin(BasePlugin):
     def on_config(self, config: Config, **kwargs) -> Config:
         enable_on_env = self.config["enable_on_env"]
         self.enabled = self.config["enabled"] or (
-            enable_on_env and distutils.util.strtobool(os.getenv(enable_on_env, "0"))
+            enable_on_env and _strtobool(os.getenv(enable_on_env, "0"))
         )
 
         fences = (
@@ -191,3 +190,12 @@ def _validate(src: str, command: str):
         subprocess.run(
             cmd, input=src.encode(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True
         )
+
+
+def _strtobool(val: str) -> bool:
+    val = val.lower()
+    if val in ("y", "yes", "t", "true", "on", "1"):
+        return True
+    if val in ("n", "no", "f", "false", "off", "0"):
+        return False
+    raise ValueError("invalid truth value %r" % val)
