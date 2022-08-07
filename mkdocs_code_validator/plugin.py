@@ -120,7 +120,10 @@ class CodeValidatorPlugin(BasePlugin):
         attrs: MutableMapping[str, Any],
         md: Markdown,
     ):
-        return "nocheck" not in inputs
+        return (
+            self._get_default_fence(md)["validator"](language, inputs, options, attrs, md)
+            and "nocheck" not in inputs
+        )
 
     def formatter(
         self,
@@ -140,8 +143,7 @@ class CodeValidatorPlugin(BasePlugin):
 
         kwargs.setdefault("classes", []).append(language)
 
-        fences_preprocessor = md.preprocessors["fenced_code_block"].extension.superfences  # type: ignore
-        return fences_preprocessor[0]["formatter"](
+        return self._get_default_fence(md)["formatter"](
             src=src,
             language=config.language,
             class_name=class_name,
@@ -149,6 +151,10 @@ class CodeValidatorPlugin(BasePlugin):
             md=md,
             **kwargs,
         )
+
+    @classmethod
+    def _get_default_fence(cls, md: Markdown) -> Mapping[str, Any]:
+        return md.preprocessors["fenced_code_block"].extension.superfences[0]
 
     def _check_errors(self, all_errors):
         while self._results and (all_errors or self._results[0].future.done()):
