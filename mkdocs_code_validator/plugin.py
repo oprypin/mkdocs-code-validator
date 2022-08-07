@@ -83,9 +83,11 @@ class CodeValidatorPlugin(BasePlugin):
             enable_on_env and distutils.util.strtobool(os.getenv(enable_on_env, "0"))
         )
 
-        a = config.setdefault("mdx_configs", {})
-        b = a.setdefault("pymdownx.superfences", {})
-        c = b.setdefault("custom_fences", [])
+        fences = (
+            config.setdefault("mdx_configs", {})
+            .setdefault("pymdownx.superfences", {})
+            .setdefault("custom_fences", [])
+        )
         for ident, ident_config in self.config["identifiers"].items():
             fence = {
                 "name": ident,
@@ -93,7 +95,7 @@ class CodeValidatorPlugin(BasePlugin):
                 "validator": self.validator,
                 "format": functools.partial(self.formatter, ident_config),
             }
-            c.append(fence)
+            fences.append(fence)
         return config
 
     def on_pre_build(self, config: Config, **kwargs):
