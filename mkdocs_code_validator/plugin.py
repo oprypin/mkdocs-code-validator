@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import concurrent.futures
 import dataclasses
@@ -7,7 +9,7 @@ import os
 import shlex
 import subprocess
 import tempfile
-from typing import Any, List, Mapping, MutableMapping, Optional
+from typing import Any, Mapping, MutableMapping
 
 import mkdocs.utils
 from markdown import Markdown
@@ -25,7 +27,7 @@ basic_log.propagate = False
 @dataclasses.dataclass
 class IdentifierConfig:
     language: str
-    validators: List[str]
+    validators: list[str]
 
 
 class _IdentifierConfigs(config_options.OptionallyRequired):
@@ -130,7 +132,7 @@ class CodeValidatorPlugin(BasePlugin):
         config: IdentifierConfig,
         src: str,
         language: str,
-        class_name: Optional[str],
+        class_name: str | None,
         options: Mapping[str, Any],
         md: Markdown,
         **kwargs,
