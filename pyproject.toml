@@ -1,39 +1,111 @@
-[tool.poetry]
-name = "mkdocs-code-validator"
-version = "0.1.3"
-description = "Checks Markdown code blocks in a MkDocs site against user-defined actions"
-authors = ["Oleh Prypin <oleh@pryp.in>"]
-license = "MIT"
-repository = "https://github.com/oprypin/mkdocs-code-validator"
-keywords = ["mkdocs", "mkdocs-plugin"]
-readme = "README.md"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry.plugins."mkdocs.plugins"]
+[project]
+name = "mkdocs-code-validator"
+description = "Checks Markdown code blocks in a MkDocs site against user-defined actions"
+readme = "README.md"
+license = "MIT"
+keywords = ["mkdocs", "mkdocs-plugin"]
+authors = [
+    {name = "Oleh Prypin", email = "oleh@pryp.in"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Documentation",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Typing :: Typed",
+]
+dynamic = ["version"]
+requires-python = ">=3.7"
+dependencies = [
+    "mkdocs >=1.0.3",
+    "Markdown >=3.3",
+    "pymdown-extensions >=8.0",
+]
+
+[project.urls]
+Documentation = "https://oprypin.github.io/mkdocs-code-validator/"
+Source = "https://github.com/oprypin/mkdocs-code-validator"
+Issues = "https://github.com/oprypin/mkdocs-code-validator/issues"
+
+[project.entry-points."mkdocs.plugins"]
 code-validator = "mkdocs_code_validator.plugin:CodeValidatorPlugin"
 
-[tool.poetry.dependencies]
-python = "^3.7"
-Markdown = "^3.3"
-pymdown-extensions = ">=8.0"
-mkdocs = "^1.0.3"
+[tool.hatch.version]
+path = "mkdocs_code_validator/__init__.py"
 
-[tool.poetry.dev-dependencies]
-black = {version = ">=20.8b1"}
-isort = "^5.6.4"
-autoflake = "^1.4"
-pytype = {version = ">=2021.04.15", markers = "python_version>='3.7' and python_version<'3.9' and sys_platform!='win32'"}  # Skip on Windows
+[tool.hatch.build.targets.sdist]
+include = ["/mkdocs_code_validator"]
+
+[tool.hatch.envs.default.scripts]
+all = [
+    "hatch run style:format",
+    "hatch run types:check",
+    "hatch run test:test",
+]
+
+[tool.hatch.envs.test.scripts]
+test = [
+    "bash .tools/test.sh",
+]
+
+[tool.hatch.envs.types]
+dependencies = [
+    "mypy",
+    "types-Markdown >=3.4.2",
+]
+[tool.hatch.envs.types.scripts]
+check = [
+    "mypy mkdocs_code_validator"
+]
+
+[tool.hatch.envs.style]
+skip-install = true
+dependencies = [
+    "pyupgrade",
+    "autoflake",
+    "isort",
+    "black",
+]
+[tool.hatch.envs.style.scripts]
+format = [
+    "find mkdocs_code_validator -name '*.py' | xargs pyupgrade --exit-zero-even-if-changed --py37-plus",
+    "autoflake -i -r --remove-all-unused-imports --remove-unused-variables mkdocs_code_validator",
+    "isort -q mkdocs_code_validator",
+    "black -q mkdocs_code_validator",
+]
+
+[tool.hatch.envs.docs]
+detached = true
+dependencies = [
+    "mkdocs >=1.1.2",
+    "mkdocs-material >=7.1.4",
+    "pymdown-extensions >=8.2",
+]
 
 [tool.black]
 line-length = 100
 
 [tool.isort]
+profile = "black"
 line_length = 100
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-ensure_newline_before_comments = true
 
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[tool.mypy]
+ignore_missing_imports = true
+warn_unreachable = true
+no_implicit_optional = true
+show_error_codes = true
