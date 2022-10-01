@@ -9,7 +9,7 @@ import os
 import shlex
 import subprocess
 import tempfile
-from typing import Any, Mapping, MutableMapping
+from typing import Any, Mapping, MutableMapping, MutableSequence
 
 import mkdocs.utils
 from markdown import Markdown
@@ -101,7 +101,7 @@ class CodeValidatorPlugin(BasePlugin):
 
     def on_pre_build(self, config: Config, **kwargs):
         self._pool = concurrent.futures.ThreadPoolExecutor(5, thread_name_prefix=__name__)
-        self._results = collections.deque()
+        self._results: MutableSequence[_Result] = collections.deque()
 
     def on_page_markdown(self, markdown: str, page: Page, **kwargs) -> str:
         self.current_file = page.file.src_path
