@@ -11,7 +11,6 @@ import subprocess
 import tempfile
 from typing import Any, Mapping, MutableMapping, MutableSequence
 
-import mkdocs.utils
 from markdown import Markdown
 from mkdocs.config import Config, config_options
 from mkdocs.config.base import ValidationError  # pytype: disable=import-error
@@ -19,7 +18,6 @@ from mkdocs.plugins import BasePlugin
 from mkdocs.structure.pages import Page
 
 log = logging.getLogger(f"mkdocs.plugins.{__name__}")
-log.addFilter(mkdocs.utils.warning_filter)
 basic_log = logging.getLogger(__name__)
 basic_log.propagate = False
 
