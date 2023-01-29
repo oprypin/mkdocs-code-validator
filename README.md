@@ -4,7 +4,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/mkdocs-code-validator)](https://pypi.org/project/mkdocs-code-validator/)
 [![License](https://img.shields.io/github/license/oprypin/mkdocs-code-validator)](https://github.com/oprypin/mkdocs-code-validator/blob/master/LICENSE.md)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/oprypin/mkdocs-code-validator/CI)](https://github.com/oprypin/mkdocs-code-validator/actions?query=event%3Apush+branch%3Amaster)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/oprypin/mkdocs-code-validator/ci.yml.svg)](https://github.com/oprypin/mkdocs-code-validator/actions?query=event%3Apush+branch%3Amaster)
 
 ```shell
 pip install mkdocs-code-validator
