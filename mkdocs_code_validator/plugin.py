@@ -9,7 +9,7 @@ import os
 import shlex
 import subprocess
 import tempfile
-from typing import TYPE_CHECKING, Any, Mapping, MutableMapping, MutableSequence
+from typing import TYPE_CHECKING, Any, Mapping, List, MutableMapping, MutableSequence
 
 from mkdocs.config import config_options
 from mkdocs.config.base import ValidationError
@@ -25,13 +25,15 @@ basic_log = logging.getLogger(__name__)
 basic_log.propagate = False
 
 
+print('test')
+
 @dataclasses.dataclass
 class IdentifierConfig:
     language: str
     validators: list[str]
 
 
-class _IdentifierConfigs(config_options.OptionallyRequired):
+class _IdentifierConfigs (config_options.OptionallyRequired):
     def __init__(self):
         super().__init__(required=True)
 
@@ -44,6 +46,7 @@ class _IdentifierConfigs(config_options.OptionallyRequired):
                 raise ValidationError(
                     f"Expected a dict as the value for {ident!r}, got {type(config)}"
                 )
+
 
             config.setdefault("language", ident)
             config.setdefault("validators", [])
