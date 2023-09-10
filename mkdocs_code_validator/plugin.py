@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import collections
 import concurrent.futures
-import dataclasses
 import functools
 import logging
 import os
@@ -11,8 +10,8 @@ import subprocess
 import tempfile
 from typing import TYPE_CHECKING, Any, Mapping, MutableMapping, MutableSequence
 
-from mkdocs.config import config_options
-from mkdocs.config.base import ValidationError
+from mkdocs.config import Config
+from mkdocs.config import config_options as opt
 from mkdocs.plugins import BasePlugin
 
 if TYPE_CHECKING:
@@ -25,72 +24,42 @@ basic_log = logging.getLogger(__name__)
 basic_log.propagate = False
 
 
-@dataclasses.dataclass
-class IdentifierConfig:
-    language: str
-    validators: list[str]
+class IdentifierConfig(Config):
+    language = opt.Type(str)
+    validators = opt.ListOfItems(opt.Type(str), default=[])
 
 
-class _IdentifierConfigs(config_options.OptionallyRequired):
+class _IdentifierConfigs(opt.BaseConfigOption[Mapping[str, IdentifierConfig]]):
     def __init__(self):
-        super().__init__(required=True)
+        super().__init__()
+        self.option_type = opt.DictOfItems(opt.SubConfig(IdentifierConfig))
 
-    def run_validation(self, value):
-        if not isinstance(value, dict):
-            raise ValidationError(f"Expected a dict, got {type(value)}")
-
-        for ident, config in value.items():
-            if not isinstance(config, dict) or not config:
-                raise ValidationError(
-                    f"Expected a dict as the value for {ident!r}, got {type(config)}"
-                )
-
-            config.setdefault("language", ident)
-            config.setdefault("validators", [])
-            try:
-                value[ident] = config = IdentifierConfig(**config)
-            except TypeError as e:
-                raise ValidationError(str(e))
-
-            if not isinstance(config.language, (str, type(None))):
-                raise ValidationError(
-                    f"Expected 'language' to be a string, got {type(config.language)}"
-                )
-            if not isinstance(config.validators, list):
-                raise ValidationError(
-                    f"Expected 'validators' to be a list of strings, got {type(config.validators)}"
-                )
-            for v in config.validators:
-                if not isinstance(v, str):
-                    raise ValidationError(
-                        f"Expected 'validators' to be a list of strings, but one item is {type(v)}"
-                    )
-
-        return value
+    def run_validation(self, value: object) -> Mapping[str, IdentifierConfig]:
+        if isinstance(value, dict):
+            for k, v in value.items():
+                if isinstance(v, dict):
+                    v.setdefault("language", k)
+        return self.option_type.run_validation(value)
 
 
 _Result = collections.namedtuple("_Result", "file src command future")
 
 
-class CodeValidatorPlugin(BasePlugin):
-    config_scheme = (
-        ("enabled", config_options.Type(bool, default=True)),
-        ("enable_on_env", config_options.Type(str, default=None)),
-        ("identifiers", _IdentifierConfigs()),
-    )
+class PluginConfig(Config):
+    enabled = opt.Type(bool, default=True)
+    identifiers = _IdentifierConfigs()
 
+
+class CodeValidatorPlugin(BasePlugin[PluginConfig]):
     def on_config(self, config: MkDocsConfig, **kwargs) -> MkDocsConfig:
-        enable_on_env = self.config["enable_on_env"]
-        self.enabled = self.config["enabled"] or (
-            enable_on_env and _strtobool(os.getenv(enable_on_env, "0"))
-        )
+        self.enabled = self.config.enabled
 
         fences = (
             config.setdefault("mdx_configs", {})
             .setdefault("pymdownx.superfences", {})
             .setdefault("custom_fences", [])
         )
-        for ident, ident_config in self.config["identifiers"].items():
+        for ident, ident_config in self.config.identifiers.items():
             fence = {
                 "name": ident,
                 "class": ident,
@@ -105,7 +74,7 @@ class CodeValidatorPlugin(BasePlugin):
         self._results: MutableSequence[_Result] = collections.deque()
 
     def on_page_markdown(self, markdown: str, page: Page, **kwargs) -> str:
-        self.current_file = page.file.src_path
+        self.current_file = page.file.src_uri
         self._check_errors(False)
         return markdown
 
@@ -199,12 +168,3 @@ def _validate(src: str, command: str):
         subprocess.run(
             cmd, input=src.encode(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True
         )
-
-
-def _strtobool(val: str) -> bool:
-    val = val.lower()
-    if val in ("y", "yes", "t", "true", "on", "1"):
-        return True
-    if val in ("n", "no", "f", "false", "off", "0"):
-        return False
-    raise ValueError("invalid truth value %r" % val)

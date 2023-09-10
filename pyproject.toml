@@ -32,11 +32,11 @@ classifiers = [
 dynamic = ["version"]
 requires-python = ">=3.7"
 dependencies = [
-    "mkdocs >=1.0.3",
+    "mkdocs >=1.5.0",
     "Markdown >=3.3",
     "pymdown-extensions >=8.0",
-    #min "importlib_metadata >=4.3",
-    #min "jinja2 >=2.10.1",
+    #min "importlib_metadata >=4.3; python_version < '3.10'",
+    #min "jinja2 >=2.11.1",
     #min "markupsafe >=2.0.1",
 ]
 
