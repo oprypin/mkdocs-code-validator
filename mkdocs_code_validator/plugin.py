@@ -9,13 +9,15 @@ import os
 import shlex
 import subprocess
 import tempfile
-from typing import Any, Mapping, MutableMapping, MutableSequence
+from typing import TYPE_CHECKING, Any, Mapping, MutableMapping, MutableSequence
 
-from markdown import Markdown
 from mkdocs.config import Config, config_options
 from mkdocs.config.base import ValidationError  # pytype: disable=import-error
 from mkdocs.plugins import BasePlugin
-from mkdocs.structure.pages import Page
+
+if TYPE_CHECKING:
+    from markdown import Markdown
+    from mkdocs.structure.pages import Page
 
 log = logging.getLogger(f"mkdocs.plugins.{__name__}")
 basic_log = logging.getLogger(__name__)
