@@ -11,12 +11,13 @@ import subprocess
 import tempfile
 from typing import TYPE_CHECKING, Any, Mapping, MutableMapping, MutableSequence
 
-from mkdocs.config import Config, config_options
-from mkdocs.config.base import ValidationError  # pytype: disable=import-error
+from mkdocs.config import config_options
+from mkdocs.config.base import ValidationError
 from mkdocs.plugins import BasePlugin
 
 if TYPE_CHECKING:
     from markdown import Markdown
+    from mkdocs.config.defaults import MkDocsConfig
     from mkdocs.structure.pages import Page
 
 log = logging.getLogger(f"mkdocs.plugins.{__name__}")
@@ -78,7 +79,7 @@ class CodeValidatorPlugin(BasePlugin):
         ("identifiers", _IdentifierConfigs()),
     )
 
-    def on_config(self, config: Config, **kwargs) -> Config:
+    def on_config(self, config: MkDocsConfig, **kwargs) -> MkDocsConfig:
         enable_on_env = self.config["enable_on_env"]
         self.enabled = self.config["enabled"] or (
             enable_on_env and _strtobool(os.getenv(enable_on_env, "0"))
@@ -99,7 +100,7 @@ class CodeValidatorPlugin(BasePlugin):
             fences.append(fence)
         return config
 
-    def on_pre_build(self, config: Config, **kwargs):
+    def on_pre_build(self, config: MkDocsConfig, **kwargs):
         self._pool = concurrent.futures.ThreadPoolExecutor(5, thread_name_prefix=__name__)
         self._results: MutableSequence[_Result] = collections.deque()
 
@@ -108,7 +109,7 @@ class CodeValidatorPlugin(BasePlugin):
         self._check_errors(False)
         return markdown
 
-    def on_post_build(self, config: Config, **kwargs):
+    def on_post_build(self, config: MkDocsConfig, **kwargs):
         self._check_errors(True)
         for r in self._results:
             r.future.cancel()
