@@ -36,8 +36,6 @@ dependencies = [
     "Markdown >=3.3",
     "pymdown-extensions >=8.0",
     #min "importlib_metadata >=4.3; python_version < '3.10'",
-    #min "jinja2 >=2.11.1",
-    #min "markupsafe >=2.0.1",
 ]
 
 [project.urls]
