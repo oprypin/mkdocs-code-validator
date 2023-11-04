@@ -116,3 +116,4 @@ allow-dict-calls-with-keyword-arguments = true
 
 [tool.mypy]
 warn_unreachable = true
+allow_redefinition = true

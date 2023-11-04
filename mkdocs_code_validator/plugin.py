@@ -126,7 +126,8 @@ class CodeValidatorPlugin(BasePlugin[PluginConfig]):
 
     @classmethod
     def _get_default_fence(cls, md: Markdown) -> Mapping[str, Any]:
-        return md.preprocessors["fenced_code_block"].extension.superfences[0]
+        preprocessor: Any = md.preprocessors["fenced_code_block"]
+        return preprocessor.extension.superfences[0]
 
     def _check_errors(self, all_errors):
         while self._results and (all_errors or self._results[0].future.done()):
