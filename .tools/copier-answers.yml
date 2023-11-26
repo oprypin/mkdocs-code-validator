@@ -1,0 +1,13 @@
+_commit: 7d6f4ceea
+_src_path: gh:oprypin/py-project-template
+copyright_date: '2021'
+mkdocs: true
+mkdocs_install_self: false
+project_description: Checks Markdown code blocks in a MkDocs site against user-defined actions
+project_name: mkdocs-code-validator
+pytest: false
+python_distribution_name: mkdocs-code-validator
+python_source_path: mkdocs_code_validator
+repository_name: oprypin/mkdocs-code-validator
+script_test: true
+
