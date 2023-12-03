@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import concurrent.futures
+import contextlib
 import functools
 import logging
 import os
@@ -160,10 +161,8 @@ def _validate(src: str, command: str):
             log.debug(cmd)
             subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
         finally:
-            try:
+            with contextlib.suppress(OSError):
                 os.remove(f.name)
-            except OSError:
-                pass
     else:
         log.debug(cmd)
         subprocess.run(
