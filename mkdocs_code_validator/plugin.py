@@ -9,7 +9,8 @@ import os
 import shlex
 import subprocess
 import tempfile
-from typing import TYPE_CHECKING, Any, Mapping, MutableMapping, MutableSequence
+from collections.abc import Mapping, MutableMapping
+from typing import TYPE_CHECKING, Any
 
 from mkdocs.config import Config
 from mkdocs.config import config_options as opt
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
     from markdown import Markdown
     from mkdocs.config.defaults import MkDocsConfig
     from mkdocs.structure.pages import Page
+
 
 log = logging.getLogger(f"mkdocs.plugins.{__name__}")
 basic_log = logging.getLogger(__name__)
@@ -72,15 +74,15 @@ class CodeValidatorPlugin(BasePlugin[PluginConfig]):
 
     def on_pre_build(self, config: MkDocsConfig, **kwargs):
         self._pool = concurrent.futures.ThreadPoolExecutor(5, thread_name_prefix=__name__)
-        self._results: MutableSequence[_Result] = collections.deque()
+        self._results: collections.deque[_Result] = collections.deque()
 
     def on_page_markdown(self, markdown: str, page: Page, **kwargs) -> str:
         self.current_file = page.file.src_uri
-        self._check_errors(False)
+        self._check_errors(all_errors=False)
         return markdown
 
     def on_post_build(self, config: MkDocsConfig, **kwargs):
-        self._check_errors(True)
+        self._check_errors(all_errors=True)
         for r in self._results:
             r.future.cancel()
         self._pool.shutdown()
@@ -130,7 +132,7 @@ class CodeValidatorPlugin(BasePlugin[PluginConfig]):
         preprocessor: Any = md.preprocessors["fenced_code_block"]
         return preprocessor.extension.superfences[0]
 
-    def _check_errors(self, all_errors):
+    def _check_errors(self, *, all_errors: bool):
         while self._results and (all_errors or self._results[0].future.done()):
             file, src, command, future = self._results.popleft()
             try:
@@ -148,7 +150,7 @@ class CodeValidatorPlugin(BasePlugin[PluginConfig]):
                 basic_log.warning("\n".join(msg[1:]))
 
 
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def _validate(src: str, command: str):
     src += "\n"
     cmd = shlex.split(command)
