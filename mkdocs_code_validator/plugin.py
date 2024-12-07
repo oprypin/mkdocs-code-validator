@@ -10,7 +10,7 @@ import shlex
 import subprocess
 import tempfile
 from collections.abc import Mapping, MutableMapping
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from mkdocs.config import Config
 from mkdocs.config import config_options as opt
@@ -45,7 +45,11 @@ class _IdentifierConfigs(opt.BaseConfigOption[Mapping[str, IdentifierConfig]]):
         return self.option_type.run_validation(value)
 
 
-_Result = collections.namedtuple("_Result", "file src command future")
+class _Result(NamedTuple):
+    file: str
+    src: str
+    command: str
+    future: concurrent.futures.Future
 
 
 class PluginConfig(Config):
