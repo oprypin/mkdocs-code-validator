@@ -21,10 +21,13 @@ if TYPE_CHECKING:
     from mkdocs.config.defaults import MkDocsConfig
     from mkdocs.structure.pages import Page
 
-import properdocs.replacement_warning
+try:
+    import properdocs.replacement_warning
 
-# Warn when this plugin is being used from the mkdocs executable.
-properdocs.replacement_warning.setup()
+    # Warn when this plugin is being used from the mkdocs executable.
+    properdocs.replacement_warning.setup()
+except ImportError:
+    pass
 
 log = logging.getLogger(f"mkdocs.plugins.{__name__}")
 basic_log = logging.getLogger(__name__)
