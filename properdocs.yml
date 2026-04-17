@@ -1,5 +1,5 @@
 site_name: "mkdocs-code-validator"
-site_description: "Checks Markdown code blocks in a MkDocs site against user-defined actions"
+site_description: "Checks Markdown code blocks in a ProperDocs site against user-defined actions"
 site_url: "https://oprypin.github.io/mkdocs-code-validator"
 repo_url: "https://github.com/oprypin/mkdocs-code-validator"
 edit_uri: blob/master/docs/
