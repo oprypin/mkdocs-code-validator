@@ -1,9 +1,12 @@
 site_name: foo
 site_url: http://example.org/
 
+theme: mkdocs
+
 plugins:
   - search
   - code-validator:
+      enabled: !ENV [LINT, false]
       identifiers:
         bash:
           validators:

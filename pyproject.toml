@@ -4,10 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mkdocs-code-validator"
-description = "Checks Markdown code blocks in a MkDocs site against user-defined actions"
+description = "Checks Markdown code blocks in a ProperDocs site against user-defined actions"
 readme = "README.md"
 license = "MIT"
-keywords = ["mkdocs", "mkdocs-plugin"]
+keywords = ["properdocs", "mkdocs", "mkdocs-plugin"]
 authors = [
     {name = "Oleh Prypin", email = "oleh@pryp.in"},
 ]
@@ -68,6 +68,10 @@ all = [
     "hatch run test:test",
 ]
 
+[tool.hatch.envs.test]
+dependencies = [
+    "properdocs-theme-mkdocs",
+]
 [tool.hatch.envs.test.scripts]
 test = [
     "bash .tools/test.sh {args}",

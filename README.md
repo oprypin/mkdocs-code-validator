@@ -1,6 +1,6 @@
 # mkdocs-code-validator
 
-**Checks Markdown code blocks in a [MkDocs][] site against user-defined actions**
+**Checks Markdown code blocks in a [ProperDocs][] site against user-defined actions**
 
 [![PyPI](https://img.shields.io/pypi/v/mkdocs-code-validator)](https://pypi.org/project/mkdocs-code-validator/)
 [![License](https://img.shields.io/github/license/oprypin/mkdocs-code-validator)](https://github.com/oprypin/mkdocs-code-validator/blob/master/LICENSE.md)
@@ -12,7 +12,7 @@ pip install mkdocs-code-validator
 
 ## Usage
 
-Activate the plugin in **mkdocs.yml**. The `identifiers` config is mandatory. And the plugin **doesn't work without [pymdownx.superfences][]**:
+Activate the plugin in **properdocs.yml**. The `identifiers` config is mandatory. And the plugin **doesn't work without [pymdownx.superfences][]**:
 
 ```yaml
 plugins:
@@ -26,9 +26,9 @@ markdown_extensions:
   - pymdownx.superfences
 ```
 
-The above contrived config checks that every <code>```bash</code> code block in the Markdown files of this MkDocs site must contain the letter "a", otherwise a warning will appear.
+The above contrived config checks that every <code>```bash</code> code block in the Markdown files of this ProperDocs site must contain the letter "a", otherwise a warning will appear.
 
-The content of each code block is piped as stdin to the command. The exit code of the command is what's checked: a non-zero code will produce a warning (which in MkDocs you can make fatal with the `--strict` flag). The output of the command is not used in any way, only preserved on the screen as part of a warning.
+The content of each code block is piped as stdin to the command. The exit code of the command is what's checked: a non-zero code will produce a warning (which in ProperDocs you can make fatal with the `--strict` flag). The output of the command is not used in any way, only preserved on the screen as part of a warning.
 
 You can add any number of identifiers, and within them any number of `validators` commands, each of them has the ability to produce a warning.
 
@@ -39,6 +39,6 @@ The commands do *not* allow freeform shell syntax, it's just one subprocess to c
 The definition of what a code block is is all according to the [pymdownx.superfences][] extension. It must be enabled; the plugin won't do anything without it.
 
 
-[mkdocs]: https://www.mkdocs.org/
+[properdocs]: https://github.com/ProperDocs/properdocs#readme
 [documentation site]: https://oprypin.github.io/mkdocs-code-validator
 [pymdownx.superfences]: https://facelessuser.github.io/pymdown-extensions/extensions/superfences/
